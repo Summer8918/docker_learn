@@ -13,20 +13,54 @@
         <button onclick="addItem()">Add</button>
         <ul id="todoList"></ul>
         <script>
-            function addItem() {
-                const input = document.getElementById('newItem');
+            const API_URL = 'http://localhost:8000';
+
+            // The async function ... + await: runs requests asynchronously without freezing the UI thread.
+            // fetch(${API_URL}/todos): calls the server’s GET /todos endpoint to retrieve the list.
+            // await response.json(): parses the JSON array returned by FastAPI (a list of TodoItem).
+            async function fetchTodos() {
+                const response = await fetch(`${API_URL}/todos`);
+                const todos = await response.json();
                 const list = document.getElementById('todoList');
-                const li = document.createElement('li');
-                li.textContent = input.value;
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.onclick = function() {
-                    list.removeChild(li);
-                };
-                li.appendChild(deleteBtn);
-                list.appendChild(li);
-                input.value = '';
+                list.innerHTML = '';
+                todos.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.textContent = todo.content;
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.onclick = () => deleteItem(todo.id);
+                    li.appendChild(deleteBtn);
+                    list.appendChild(li);
+                });
             }
+
+            async function addItem() {
+                const input = document.getElementById('newItem');
+                if (input.value.trim() !== '') {
+                    const response = await fetch(`${API_URL}/todos`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({content: input.value}),
+                    });
+                    if (response.ok) {
+                        input.value = '';
+                        fetchTodos();
+                    }
+                }
+            }
+
+            async function deleteItem(id) {
+                const response = await fetch(`${API_URL}/todos/${id}`, {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    fetchTodos();
+                }
+            }
+
+            fetchTodos();
         </script>
     </body>
 </html>
