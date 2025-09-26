@@ -12,6 +12,7 @@ CORS is a way for the server to tell the browser: “it’s okay for this origin
 By adding CORSMiddleware, you’re telling FastAPI to include special HTTP headers 
 (Access-Control-Allow-*) in responses so that browsers will allow frontend code running on 
 another origin (like http://localhost:3000) to interact with your backend.
+CORS == Cross-Origin Resource Sharing, letting a frontend call a backend of a different domain.
 '''
 app.add_middleware(
     CORSMiddleware,
