@@ -1,0 +1,22 @@
+services:
+  backend:
+    image: mysite-backend
+    # Tells Compose not to pull the image from a registry (like Docker Hub).
+    pull_policy: never
+    container_name: mysite-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: runner
+    ports:
+    - "8000:8000"
+
+  frontend:
+    image: mysite-frontend
+    pull_policy: never
+    container_name: mysite-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+    - "81:80"
